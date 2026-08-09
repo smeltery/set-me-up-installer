@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # shellcheck source=/dev/null
-source /dev/stdin <<<"$(curl -s "https://raw.githubusercontent.com/dotbrains/utilities/master/utilities.sh")"
+source /dev/stdin <<<"$(curl -s "https://raw.githubusercontent.com/dotbrains/utilities/v1.2.0/import.sh")"
+
+smu::import base
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
