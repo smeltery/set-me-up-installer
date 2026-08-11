@@ -338,4 +338,20 @@ def _init_adapter(manifest_id, force=False):
             f.write(stubs[shell])
 
 
+def git_is_submodule(path):
+    # A submodule checked out via `git submodule update` is always on a
+    # detached HEAD pinned to the recorded commit -- that's expected, not
+    # drift -- so callers use this to tell it apart from a real detached repo.
+    try:
+        result = subprocess.run(
+            ["git", "-C", path, "rev-parse", "--show-superproject-working-tree"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return bool(result.stdout.strip())
+    except (subprocess.CalledProcessError, OSError):
+        return False
+
+
 __all__ = [name for name in globals() if not name.startswith("__")]

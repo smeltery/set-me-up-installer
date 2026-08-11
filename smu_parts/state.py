@@ -58,7 +58,7 @@ def git_branch(path):
 def git_upstream_sync(path):
     branch = git_branch(path)
     if not branch:
-        return {"branch": None, "status": "detached", "ahead": 0, "behind": 0}
+        return {"branch": None, "status": "current" if git_is_submodule(path) else "detached", "ahead": 0, "behind": 0}
     try:
         subprocess.run(["git", "-C", path, "fetch", "--quiet", "origin"], check=False)
         result = subprocess.run(
