@@ -27,7 +27,7 @@ EOF
 chmod +x "$bin_dir/curl"
 
 payload="$(
-    SMU_BLUEPRINT="dotbrains/set-me-up-blueprint" \
+    SMU_BLUEPRINT="smeltery/set-me-up-blueprint" \
     SMU_BLUEPRINT_BRANCH="master" \
     SMU_HOME_DIR="$tmp_home/set-me-up" \
     PATH="$bin_dir:$PATH" \
@@ -50,7 +50,7 @@ touch "$tmp_home/dirty/change"
 git -C "$tmp_home/dirty" init --quiet
 
 payload="$(
-    SMU_BLUEPRINT="dotbrains/set-me-up-blueprint" \
+    SMU_BLUEPRINT="smeltery/set-me-up-blueprint" \
     SMU_BLUEPRINT_BRANCH="master" \
     SMU_HOME_DIR="$tmp_home/dirty" \
     PATH="$bin_dir:$PATH" \

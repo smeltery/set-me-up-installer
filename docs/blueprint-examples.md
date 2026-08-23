@@ -54,7 +54,7 @@ smu provisioning-adapter dashboard --adapter home-manager --json
 ## VPS
 
 ```bash
-INSTALL_URL="https://raw.githubusercontent.com/dotbrains/set-me-up-installer/main/install.sh"
+INSTALL_URL="https://raw.githubusercontent.com/smeltery/set-me-up-installer/main/install.sh"
 curl -fsSL "$INSTALL_URL" \
   | bash -s -- --profile vps --plan
 curl -fsSL "$INSTALL_URL" \

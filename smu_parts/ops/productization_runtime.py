@@ -5,8 +5,8 @@ BLUEPRINT_REGISTRY_PATH = os.path.join(installer_root, "docs", "blueprint-regist
 
 BLUEPRINT_REGISTRY = [
     {
-        "id": "dotbrains/default",
-        "url": "https://github.com/dotbrains/set-me-up-blueprint",
+        "id": "smeltery/default",
+        "url": "https://github.com/smeltery/set-me-up-blueprint",
         "modes": ["rcm", "nix", "hybrid"],
         "vps_ready": True,
         "rollback": "partial",

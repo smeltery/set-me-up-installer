@@ -47,10 +47,10 @@ class TestSmuProductRuntime(unittest.TestCase):
             trust_path = os.path.join(tempdir, "catalog-trust.json")
             with patch.object(smu, "catalog_trust_path", trust_path), \
                     patch.object(smu, "_utc_timestamp", return_value="now"):
-                smu.catalog_trust_command(["publisher", "dotbrains"], json_output=False)
+                smu.catalog_trust_command(["publisher", "smeltery"], json_output=False)
                 trust = smu.read_catalog_trust()
 
-        self.assertIn("dotbrains", trust["trusted_publishers"])
+        self.assertIn("smeltery", trust["trusted_publishers"])
 
     def test_rollback_preview_reports_restore_targets(self):
         with patch.object(smu, "last_state_event", return_value={
@@ -87,12 +87,12 @@ class TestSmuProductRuntime(unittest.TestCase):
             output = os.path.join(tempdir, "work.smu-pack")
 
             with patch.object(smu, "prompt_catalog_path", os.path.dirname(manifest)), \
-                    patch.dict(os.environ, {"SMU_CATALOG_PUBLISHER": "dotbrains"}):
+                    patch.dict(os.environ, {"SMU_CATALOG_PUBLISHER": "smeltery"}):
                 smu.catalog_package("work", output=output, force=False)
 
             pack = smu._read_simple_toml(os.path.join(output, "pack.toml"))
 
-        self.assertEqual(pack["publisher"], "dotbrains")
+        self.assertEqual(pack["publisher"], "smeltery")
 
 
 if __name__ == "__main__":

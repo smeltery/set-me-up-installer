@@ -2,7 +2,7 @@
   "blueprint": {
     "branch": "master",
     "path": "/home/user/set-me-up",
-    "repository": "dotbrains/set-me-up-blueprint",
+    "repository": "smeltery/set-me-up-blueprint",
     "submodule_scope": "platform"
   },
   "dotfiles": {

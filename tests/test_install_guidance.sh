@@ -43,7 +43,7 @@ EOF
 
 chmod +x "$bin_dir/curl" "$bin_dir/git"
 
-SMU_BLUEPRINT="dotbrains/set-me-up-blueprint" \
+SMU_BLUEPRINT="smeltery/set-me-up-blueprint" \
 SMU_BLUEPRINT_BRANCH="master" \
 SMU_HOME_DIR="$tmp_home/set-me-up" \
 PATH="$bin_dir:$PATH" \

@@ -31,9 +31,9 @@ Catalog trust policy is stored in `~/.config/set-me-up/catalog-trust.json`:
 
 ```bash
 smu catalog trust status --json
-smu catalog trust publisher dotbrains
+smu catalog trust publisher smeltery
 smu catalog trust registry official
-SMU_CATALOG_PUBLISHER=dotbrains smu catalog package work-shell
+SMU_CATALOG_PUBLISHER=smeltery smu catalog package work-shell
 ```
 
 Rollback previews are machine-readable:

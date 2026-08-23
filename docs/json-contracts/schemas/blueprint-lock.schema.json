@@ -1,5 +1,5 @@
 {
-  "$id": "https://dotbrains.dev/set-me-up/contracts/blueprint-lock.schema.json",
+  "$id": "https://smeltery.dev/set-me-up/contracts/blueprint-lock.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "set-me-up blueprint lock contract",
   "type": "object",

@@ -4,12 +4,12 @@
 # shellcheck disable=SC2154
 # shellcheck disable=SC1091
 
-source /dev/stdin <<<"$(curl -s "https://raw.githubusercontent.com/dotbrains/utilities/v1.2.0/import.sh")" &&
+source /dev/stdin <<<"$(curl -s "https://raw.githubusercontent.com/smeltery/utilities/v1.2.0/import.sh")" &&
     smu::import base system
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# GitHub user/repo & branch value of your set-me-up blueprint (e.g.: dotbrains/set-me-up-blueprint/master).
+# GitHub user/repo & branch value of your set-me-up blueprint (e.g.: smeltery/set-me-up-blueprint/master).
 # Set this value when the installer should additionally obtain your blueprint.
 readonly SMU_BLUEPRINT=${SMU_BLUEPRINT:-""}
 readonly SMU_BLUEPRINT_BRANCH=${SMU_BLUEPRINT_BRANCH:-""}
@@ -31,7 +31,7 @@ readonly SMU_IGNORED_PATHS="${SMU_IGNORED_PATHS:-""}"
 # Where to install set-me-up
 readonly SMU_HOME_DIR=${SMU_HOME_DIR:-"${HOME}/set-me-up"}
 readonly SMU_INSTALLER_REF=${SMU_INSTALLER_REF:-"main"}
-readonly SMU_INSTALLER_URL=${SMU_INSTALLER_URL:-"https://raw.githubusercontent.com/dotbrains/set-me-up-installer/${SMU_INSTALLER_REF}/install.sh"}
+readonly SMU_INSTALLER_URL=${SMU_INSTALLER_URL:-"https://raw.githubusercontent.com/smeltery/set-me-up-installer/${SMU_INSTALLER_REF}/install.sh"}
 readonly SMU_SUBMODULE_SCOPE=${SMU_SUBMODULE_SCOPE:-"all"}
 
 readonly smu_download="https://github.com/${SMU_BLUEPRINT}"
@@ -443,7 +443,7 @@ function check_os_support() {
 	if invoked_via_smu_blueprint; then
 		# If invoked via SMU Blueprint, then we can assume that the OS is supported.
 		# This is because the SMU Blueprint is responsible for determining if the OS is supported.
-		# By default, 'dotbrains/set-me-up' (non-blueprint) supports MacOS, Debian, and Arch Linux.
+		# By default, 'smeltery/set-me-up' (non-blueprint) supports MacOS, Debian, and Arch Linux.
 		return 0
 	fi
 
@@ -461,7 +461,7 @@ function source_header() {
 		return 0
 	fi
 
-	source /dev/stdin <<<"$(curl -s "https://raw.githubusercontent.com/dotbrains/set-me-up-installer/main/scripts/header.sh")"
+	source /dev/stdin <<<"$(curl -s "https://raw.githubusercontent.com/smeltery/set-me-up-installer/main/scripts/header.sh")"
 }
 
 main() {

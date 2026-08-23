@@ -58,7 +58,7 @@ def _shell_shim_content(blueprint, branch, scope):
         f'export SMU_SUBMODULE_SCOPE=${{SMU_SUBMODULE_SCOPE:-"{scope}"}}',
         'export SMU_IGNORED_PATHS="${SMU_IGNORED_PATHS:-""}"',
         "",
-        'bash <(curl -s -L https://raw.githubusercontent.com/dotbrains/set-me-up-installer/main/install.sh) "$@"',
+        'bash <(curl -s -L https://raw.githubusercontent.com/smeltery/set-me-up-installer/main/install.sh) "$@"',
         "",
     ])
 
@@ -95,7 +95,7 @@ def _compat_workflow_content(adapter):
 def dotfiles_compatibility_schema():
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://dotbrains.github.io/set-me-up/schemas/dotfiles-compatibility.schema.json",
+        "$id": "https://smeltery.github.io/set-me-up/schemas/dotfiles-compatibility.schema.json",
         "title": "set-me-up dotfiles compatibility contract",
         "type": "object",
         "required": ["contract", "valid", "checks", "readiness"],

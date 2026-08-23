@@ -1,6 +1,6 @@
 # `set-me-up` installer
 
-[![Tests](https://github.com/dotbrains/set-me-up-installer/actions/workflows/tests.yml/badge.svg)](https://github.com/dotbrains/set-me-up-installer/actions/workflows/tests.yml)
+[![Tests](https://github.com/smeltery/set-me-up-installer/actions/workflows/tests.yml/badge.svg)](https://github.com/smeltery/set-me-up-installer/actions/workflows/tests.yml)
 [![License: PolyForm Shield 1.0.0](https://img.shields.io/badge/License-PolyForm%20Shield%201.0.0-blue.svg)](https://polyformproject.org/licenses/shield/1.0.0)
 
 ![preview](.github/preview.png)
@@ -27,7 +27,7 @@ run the following command in your console.
 understand [what it does](../install.sh). Seriously, **DON'T**!)
 
 ```bash
-INSTALL_URL="https://raw.githubusercontent.com/dotbrains/set-me-up-installer/main/install.sh"
+INSTALL_URL="https://raw.githubusercontent.com/smeltery/set-me-up-installer/main/install.sh"
 bash <(curl -s -L "$INSTALL_URL")
 ```
 
@@ -56,7 +56,7 @@ unable to pick up the sources.
 
 ```bash
 export SMU_HOME_DIR="some-path"
-INSTALL_URL="https://raw.githubusercontent.com/dotbrains/set-me-up-installer/main/install.sh"
+INSTALL_URL="https://raw.githubusercontent.com/smeltery/set-me-up-installer/main/install.sh"
 bash <(curl -s -L "$INSTALL_URL")
 ```
 
@@ -87,9 +87,9 @@ The community-maintained module collections live in their own repositories.
 Browse these to see what's available and to crib examples when authoring your
 own:
 
-- [dotbrains/set-me-up-macos-modules](https://github.com/dotbrains/set-me-up-macos-modules)
-- [dotbrains/set-me-up-debian-modules](https://github.com/dotbrains/set-me-up-debian-modules)
-- [dotbrains/set-me-up-universal-modules](https://github.com/dotbrains/set-me-up-universal-modules)
+- [smeltery/set-me-up-macos-modules](https://github.com/smeltery/set-me-up-macos-modules)
+- [smeltery/set-me-up-debian-modules](https://github.com/smeltery/set-me-up-debian-modules)
+- [smeltery/set-me-up-universal-modules](https://github.com/smeltery/set-me-up-universal-modules)
 
 ### Listing what's installed locally
 
@@ -225,7 +225,7 @@ smu profile
 Set preferences during bootstrap:
 
 ```bash
-INSTALL_URL="https://raw.githubusercontent.com/dotbrains/set-me-up-installer/main/install.sh"
+INSTALL_URL="https://raw.githubusercontent.com/smeltery/set-me-up-installer/main/install.sh"
 bash <(curl -s -L "$INSTALL_URL") --theme nord --prompt classic
 bash <(curl -s -L "$INSTALL_URL") --preset nord-minimal
 ```

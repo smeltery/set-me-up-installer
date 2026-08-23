@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # shellcheck source=/dev/null
-source /dev/stdin <<<"$(curl -s "https://raw.githubusercontent.com/dotbrains/utilities/v1.2.0/import.sh")"
+source /dev/stdin <<<"$(curl -s "https://raw.githubusercontent.com/smeltery/utilities/v1.2.0/import.sh")"
 
 smu::import base
 
@@ -23,7 +23,7 @@ header() {
 echo -e "\n${bold}\$HOME sweet /~\n${normal}"
 
 echo -e "Welcome to the '${bold}set-me-up${normal}' installer."
-echo -e "For more information, please see [https://github.com/dotbrains/set-me-up-docs]."
+echo -e "For more information, please see [https://github.com/smeltery/set-me-up-docs]."
 echo -e "Please follow the on-screen instructions.\n"
 
 warn "${bold}This script sets up new machines, *use with caution*${normal}."

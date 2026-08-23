@@ -15,11 +15,11 @@ def _migration_install_sh():
     return "\n".join([
         "#!/bin/bash",
         "",
-        'export SMU_BLUEPRINT=${SMU_BLUEPRINT:-"${GITHUB_REPOSITORY:-dotbrains/set-me-up-blueprint}"}',
+        'export SMU_BLUEPRINT=${SMU_BLUEPRINT:-"${GITHUB_REPOSITORY:-smeltery/set-me-up-blueprint}"}',
         'export SMU_BLUEPRINT_BRANCH=${SMU_BLUEPRINT_BRANCH:-"main"}',
         'export SMU_SUBMODULE_SCOPE=${SMU_SUBMODULE_SCOPE:-"platform"}',
         "",
-        'bash <(curl -s -L https://raw.githubusercontent.com/dotbrains/set-me-up-installer/main/install.sh) "$@"',
+        'bash <(curl -s -L https://raw.githubusercontent.com/smeltery/set-me-up-installer/main/install.sh) "$@"',
         "",
     ])
 
@@ -39,7 +39,7 @@ def downstream_conformance_workflow_template():
         "    steps:",
         "      - uses: actions/checkout@v5",
         "      - name: Checkout installer",
-        "        run: git clone --depth 1 https://github.com/dotbrains/set-me-up-installer set-me-up-installer",
+        "        run: git clone --depth 1 https://github.com/smeltery/set-me-up-installer set-me-up-installer",
         "      - name: Validate blueprint",
         "        # smu blueprint ci --path . --check-docs --json",
         "        run: python3 set-me-up-installer/smu.py blueprint ci --path . --check-docs --json",

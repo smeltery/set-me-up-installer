@@ -1,5 +1,5 @@
 {
-  "$id": "https://dotbrains.github.io/set-me-up/schemas/blueprint.schema.json",
+  "$id": "https://smeltery.github.io/set-me-up/schemas/blueprint.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": true,
   "properties": {

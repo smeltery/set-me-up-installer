@@ -22,7 +22,7 @@ EOF
 chmod +x "$bin_dir/curl"
 
 payload="$(
-    SMU_BLUEPRINT="dotbrains/set-me-up-blueprint" \
+    SMU_BLUEPRINT="smeltery/set-me-up-blueprint" \
     SMU_BLUEPRINT_BRANCH="master" \
     SMU_HOME_DIR="$tmp_home/set-me-up" \
     SMU_INSTALLER_REF="candidate" \
@@ -35,7 +35,7 @@ import json
 import sys
 
 payload = json.loads(sys.argv[1])
-assert payload["blueprint"]["repo"] == "dotbrains/set-me-up-blueprint"
+assert payload["blueprint"]["repo"] == "smeltery/set-me-up-blueprint"
 assert payload["blueprint"]["branch"] == "master"
 assert payload["installer"]["ref"] == "candidate"
 assert payload["mode"] == "ff-only"
