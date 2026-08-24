@@ -1,5 +1,5 @@
 {
-  "$id": "https://smeltery.dev/set-me-up/contracts/bootstrap-bundle.schema.json",
+  "$id": "https://dotbrains.dev/set-me-up/contracts/bootstrap-bundle.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "set-me-up bootstrap bundle contract",
   "type": "object",

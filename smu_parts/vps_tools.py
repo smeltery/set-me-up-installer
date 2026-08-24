@@ -95,7 +95,7 @@ def _compat_workflow_content(adapter):
 def dotfiles_compatibility_schema():
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://smeltery.github.io/set-me-up/schemas/dotfiles-compatibility.schema.json",
+        "$id": "https://dotbrains.github.io/set-me-up/schemas/dotfiles-compatibility.schema.json",
         "title": "set-me-up dotfiles compatibility contract",
         "type": "object",
         "required": ["contract", "valid", "checks", "readiness"],

@@ -1,5 +1,5 @@
 {
-  "$id": "https://smeltery.dev/set-me-up/contracts/host-facts.schema.json",
+  "$id": "https://dotbrains.dev/set-me-up/contracts/host-facts.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "set-me-up host facts contract",
   "type": "object",

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://smeltery.dev/set-me-up/contracts/blueprint-ci-readiness.schema.json",
+  "$id": "https://dotbrains.dev/set-me-up/contracts/blueprint-ci-readiness.schema.json",
   "title": "set-me-up blueprint CI readiness contract",
   "type": "object",
   "required": ["valid", "errors", "readiness", "checks"],

@@ -117,7 +117,7 @@ def update_schedule_files(payload):
                 '<?xml version="1.0" encoding="UTF-8"?>',
                 '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
                 '<plist version="1.0"><dict>',
-                '<key>Label</key><string>com.smeltery.smu-update</string>',
+                '<key>Label</key><string>com.dotbrains.smu-update</string>',
                 '<key>ProgramArguments</key><array>',
                 f"<string>{sys.executable}</string><string>{smu_path}</string><string>update</string><string>preflight</string><string>--json</string>",
                 '</array>',
