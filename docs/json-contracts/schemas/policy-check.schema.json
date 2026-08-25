@@ -1,5 +1,5 @@
 {
-  "$id": "https://dotbrains.dev/set-me-up/contracts/policy-check.schema.json",
+  "$id": "https://smeltery.dev/set-me-up/contracts/policy-check.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "set-me-up policy check contract",
   "type": "object",

@@ -133,7 +133,7 @@ def blueprint_doctor(json_output=False, strict=False):
 def blueprint_mode_schema():
     return {
         "$schema": "https://json-schema.org/draft/2020-12/schema",
-        "$id": "https://dotbrains.github.io/set-me-up/schemas/blueprint.schema.json",
+        "$id": "https://smeltery.github.io/set-me-up/schemas/blueprint.schema.json",
         "title": "set-me-up blueprint configuration",
         "type": "object",
         "properties": {

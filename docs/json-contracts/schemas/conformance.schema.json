@@ -1,5 +1,5 @@
 {
-  "$id": "https://dotbrains.dev/set-me-up/contracts/conformance.schema.json",
+  "$id": "https://smeltery.dev/set-me-up/contracts/conformance.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "set-me-up conformance contract",
   "type": "object",
