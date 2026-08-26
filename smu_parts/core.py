@@ -131,16 +131,20 @@ DEFAULT_PRESET = "default"
 ADAPTER_MODES = smu_contract.ADAPTER_MODES
 
 def warn(message):
-    print(f"{COL_YELLOW}[warning]{COL_RESET} {message}")
+    from . import output
+    output.opoo(message)
 
 def success(message):
-    print(f"{COL_GREEN}[success]{COL_RESET} {message}")
+    from . import output
+    output.pretty_ok(message)
 
 def action(message):
-    print(f"{COL_YELLOW}[action]{COL_RESET} ⇒ {message}")
+    from . import output
+    output.ohai(message)
 
 def die(message, exit_code=1):
-    print(f"{COL_RED}[error]{COL_RESET} {message}", file=sys.stderr)
+    from . import output
+    output.onoe(message)
     sys.exit(exit_code)
 
 def _parse_profile_line(line):
