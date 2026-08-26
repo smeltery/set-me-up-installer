@@ -2,6 +2,7 @@ from .core import *
 
 
 DEFAULT_PROVISIONING_ADAPTER = "rcm"
+PROVISIONING_MODES = ("rcm", "nix", "hybrid")
 PROVISIONING_ADAPTER_CONTRACT_VERSION = 1
 PROVISIONING_ADAPTER_AUTHORING_CONTRACT = {
     "version": PROVISIONING_ADAPTER_CONTRACT_VERSION,
@@ -100,6 +101,26 @@ def _manifest_section_value(manifest, section, key):
 
 def configured_provisioning_adapter():
     return configured_profile_provisioning_adapter()
+
+
+def configured_provisioning_mode():
+    mode = _manifest_section_value(blueprint_config(), "provisioning", "mode")
+    if not mode:
+        return "rcm"
+    if mode not in PROVISIONING_MODES:
+        path = blueprint_config_path() or "smu.toml"
+        die(f"Unsupported provisioning mode '{mode}' in {path}.")
+    return mode
+
+
+def provisioning_mode_requires_rcm_dotfiles(mode=None):
+    mode = mode or configured_provisioning_mode()
+    return mode in ("rcm", "hybrid")
+
+
+def provisioning_mode_requires_adapter_apply(mode=None):
+    mode = mode or configured_provisioning_mode()
+    return mode in ("nix", "hybrid")
 
 
 def _validate_provisioning_adapter(adapter, path):

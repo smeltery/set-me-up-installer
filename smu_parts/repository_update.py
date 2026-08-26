@@ -171,6 +171,80 @@ def update_modules_command(json_output=False, dry_run=False):
     return 0
 
 
+def provisioning_sync_plan(profile=None):
+    mode = configured_provisioning_mode()
+    adapter = configured_profile_provisioning_adapter(profile)
+    steps = ["resolve-profile", "materialize-adapters"]
+    if provisioning_mode_requires_rcm_dotfiles(mode):
+        steps.append("rcm-dotfiles")
+    if provisioning_mode_requires_adapter_apply(mode):
+        steps.append("provisioning-apply")
+    return {
+        "mode": mode,
+        "adapter": adapter,
+        "profile": profile or "default",
+        "steps": steps,
+    }
+
+
+def sync_provision_command(
+    json_output=False,
+    dry_run=False,
+    profile=None,
+    quiet=False,
+    plan_only=False,
+    shared_only=False,
+    apply_only=False,
+):
+    plan = provisioning_sync_plan(profile)
+    if plan_only or dry_run:
+        if json_output or dry_run:
+            print(json.dumps(plan, indent=2, sort_keys=True))
+            return 0
+        for step_name in plan["steps"]:
+            print(f"plan\t{step_name}")
+        return 0
+
+    if apply_only:
+        if "provisioning-apply" not in plan["steps"]:
+            return 0
+        if not quiet:
+            output.ohai(f"Applying provisioning adapter ({plan['adapter']})")
+        return apply_provisioning_adapter_modules(
+            adapter_id=plan["adapter"],
+            profile=profile,
+            json_output=json_output,
+            dry_run=False,
+            action="switch",
+        )
+
+    if shared_only or not apply_only:
+        if not quiet:
+            output.ohai("Resolving profile")
+        write_resolved_profile()
+        if not quiet:
+            output.ohai("Materializing adapters")
+        materialize_adapters(current_theme(), current_prompt(), dry_run=False)
+
+    if not shared_only and not apply_only and "provisioning-apply" in plan["steps"]:
+        if not quiet:
+            output.ohai(f"Applying provisioning adapter ({plan['adapter']})")
+        exit_code = apply_provisioning_adapter_modules(
+            adapter_id=plan["adapter"],
+            profile=profile,
+            json_output=json_output,
+            dry_run=False,
+            action="switch",
+        )
+        if json_output:
+            print(json.dumps({"plan": plan, "exit_code": exit_code}, indent=2, sort_keys=True))
+        return exit_code
+
+    if json_output:
+        print(json.dumps({"plan": plan, "exit_code": 0}, indent=2, sort_keys=True))
+    return 0
+
+
 def update_all_command(json_output=False, force_reset=False, dry_run=False, validate=False):
     if dry_run:
         actions = ["update-blueprint", "update-installer", "update-modules", "resolve-profile", "materialize-adapters"]

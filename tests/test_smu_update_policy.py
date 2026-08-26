@@ -189,6 +189,17 @@ class TestSmuUpdatePolicy(unittest.TestCase):
         self.assertEqual(payload["repositories"][0]["update_status"], "blocked")
         self.assertTrue(payload["repositories"][0]["force_reset_required"])
 
+    def test_provisioning_sync_plan_matches_mode(self):
+        with patch.object(smu, "configured_provisioning_mode", return_value="hybrid"), \
+                patch.object(smu, "configured_profile_provisioning_adapter", return_value="hybrid"):
+            plan = smu.provisioning_sync_plan()
+
+        self.assertEqual(plan["mode"], "hybrid")
+        self.assertEqual(
+            plan["steps"],
+            ["resolve-profile", "materialize-adapters", "rcm-dotfiles", "provisioning-apply"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
