@@ -1,5 +1,5 @@
 from .core import *
-from . import output
+from .ops import output_runtime as output
 
 
 def git_has_worktree_changes(path):

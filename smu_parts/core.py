@@ -131,19 +131,19 @@ DEFAULT_PRESET = "default"
 ADAPTER_MODES = smu_contract.ADAPTER_MODES
 
 def warn(message):
-    from . import output
+    from .ops import output_runtime as output
     output.opoo(message)
 
 def success(message):
-    from . import output
+    from .ops import output_runtime as output
     output.pretty_ok(message)
 
 def action(message):
-    from . import output
+    from .ops import output_runtime as output
     output.ohai(message)
 
 def die(message, exit_code=1):
-    from . import output
+    from .ops import output_runtime as output
     output.onoe(message)
     sys.exit(exit_code)
 

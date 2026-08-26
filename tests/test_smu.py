@@ -234,5 +234,45 @@ class TestSelfUpdate(unittest.TestCase):
         self.assertEqual(events, ['remove_symlinks', 'rmtree', 'install', 'symlink'])
 
 
+class OutputTests(unittest.TestCase):
+    def setUp(self):
+        import importlib.util
+        root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        path = os.path.join(root, "smu_parts", "ops", "output_runtime.py")
+        spec = importlib.util.spec_from_file_location("smu_output", path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        self.output = module
+        self._env = dict(os.environ)
+
+    def tearDown(self):
+        os.environ.clear()
+        os.environ.update(self._env)
+
+    def test_ohai_uses_brew_prefix(self):
+        import io
+        buf = io.StringIO()
+        self.output.ohai("Pulling blueprint", file=buf)
+        self.assertIn("==> Pulling blueprint", buf.getvalue())
+
+    def test_opoo_uses_warning_label(self):
+        import io
+        buf = io.StringIO()
+        self.output.opoo("blocked repo", file=buf)
+        self.assertIn("Warning: blocked repo", buf.getvalue())
+
+    def test_no_emoji_fallback(self):
+        import io
+        import sys
+        import unittest.mock
+        os.environ["SMU_NO_EMOJI"] = "1"
+        buf = io.StringIO()
+        with unittest.mock.patch.object(sys.stderr, "isatty", return_value=True), \
+                unittest.mock.patch.object(sys.stdout, "isatty", return_value=True):
+            self.output.pretty_ok("installer", file=buf)
+        self.assertIn("(ok)", buf.getvalue())
+        self.assertNotIn("✔", buf.getvalue())
+
+
 if __name__ == '__main__':
     unittest.main()
