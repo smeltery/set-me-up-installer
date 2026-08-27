@@ -238,38 +238,12 @@ so new terminals pick up the saved profile.
 Provisioning adapter docs live in [Provisioning Adapters](docs/provisioning-adapters.md).
 `rcm` is current; Nix-oriented adapter IDs are reserved for the Nix path.
 
-Users can keep machine-local choices outside the managed repo by creating
-override files in `~/.config/set-me-up/`:
-
-```toml
-# theme.toml
-theme = "nord"
-
-# prompt.toml
-prompt = "classic"
-
-# preset.toml
-preset = "nord-minimal"
-```
-
-For dotfiles and modules that should never be committed to a blueprint fork,
-use the machine-local overlay documented in
-[Machine-Local Configuration](docs/machine-local.md):
-
-```bash
-smu local init
-smu local doctor --json
-```
-
-Place per-host files under `$SMU_HOME_DIR/dotfiles/local/` and add `local` to
-the `TAGS` line in `dotfiles/rcrc`.
-
-Resolution order is environment variable, local override file, saved profile,
-then defaults. For example, `SMU_THEME` wins over `theme.toml`, and
-`theme.toml` wins over `profile.env`.
-
-Detailed catalog, registry, pack publishing, resolved profile, and adapter
-authoring workflows live in [Catalogs And Adapters](docs/catalogs-and-adapters.md).
+Users can keep machine-local choices in `~/.config/set-me-up/` override files
+(`theme.toml`, `prompt.toml`, `preset.toml`) or uncommitted blueprint overlays
+under `$SMU_HOME_DIR/dotfiles/local/`. See
+[Machine-Local Configuration](docs/machine-local.md) for init/doctor commands
+and [Catalogs And Adapters](docs/catalogs-and-adapters.md) for profile
+	resolution order.
 
 For the common checks after changing local profile or catalog files, run:
 
