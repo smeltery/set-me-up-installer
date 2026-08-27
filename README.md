@@ -243,7 +243,7 @@ Users can keep machine-local choices in `~/.config/set-me-up/` override files
 under `$SMU_HOME_DIR/dotfiles/local/`. See
 [Machine-Local Configuration](docs/machine-local.md) for init/doctor commands
 and [Catalogs And Adapters](docs/catalogs-and-adapters.md) for profile
-	resolution order.
+resolution order.
 
 For the common checks after changing local profile or catalog files, run:
 
