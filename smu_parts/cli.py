@@ -62,6 +62,8 @@ def main():
             raise SystemExit(module_graph_command(command_args))
         if command == "tui":
             raise SystemExit(tui_command(command_args))
+        if command == "local":
+            raise SystemExit(local_command(command_args))
         if command == "drift":
             raise SystemExit(drift_command(command_args))
         if command == "post-install":

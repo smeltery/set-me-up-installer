@@ -43,6 +43,13 @@ module_path = os.path.abspath(os.path.expanduser(os.environ.get(
 )))
 profile_path = os.path.join(os.path.expanduser("~"), ".config", "set-me-up", "profile.env")
 config_dir = os.path.dirname(profile_path)
+local_config_path = os.path.join(config_dir, "local.env")
+DEFAULT_WORKTREE_IGNORED_PATHS = (
+    "dotfiles/local",
+    "dotfiles/tag-local",
+    "dotfiles/tag-smu",
+)
+local_dotfiles_dir = os.path.join(smu_home_dir, "dotfiles", "local")
 resolved_profile_path = os.path.join(config_dir, "resolved.env")
 theme_override_path = os.path.join(config_dir, "theme.toml")
 prompt_override_path = os.path.join(config_dir, "prompt.toml")

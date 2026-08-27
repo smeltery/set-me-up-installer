@@ -252,6 +252,18 @@ prompt = "classic"
 preset = "nord-minimal"
 ```
 
+For dotfiles and modules that should never be committed to a blueprint fork,
+use the machine-local overlay documented in
+[Machine-Local Configuration](docs/machine-local.md):
+
+```bash
+smu local init
+smu local doctor --json
+```
+
+Place per-host files under `$SMU_HOME_DIR/dotfiles/local/` and add `local` to
+the `TAGS` line in `dotfiles/rcrc`.
+
 Resolution order is environment variable, local override file, saved profile,
 then defaults. For example, `SMU_THEME` wins over `theme.toml`, and
 `theme.toml` wins over `profile.env`.

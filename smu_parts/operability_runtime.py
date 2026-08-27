@@ -108,6 +108,10 @@ HELP_TOPICS = {
         "smu drift doctor [--root path] [--json]",
         "Compare desired blueprint state with package, link, unmanaged-file, and stale-config state.",
     ],
+    "local": [
+        "smu local init|doctor [--json]",
+        "Initialize and verify machine-local dotfiles that stay outside blueprint commits and update checks.",
+    ],
     "post-install": [
         "smu post-install doctor [--profile vps] [--json]",
         "Run post-install health checks for shell, git, SSH, rcm, Nix, and provisioning readiness.",

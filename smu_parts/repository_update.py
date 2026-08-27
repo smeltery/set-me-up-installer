@@ -2,19 +2,6 @@ from .core import *
 from .ops import output_runtime as output
 
 
-def git_has_worktree_changes(path):
-    try:
-        result = subprocess.run(
-            ["git", "-C", path, "status", "--porcelain"],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        return bool(result.stdout.strip())
-    except (subprocess.CalledProcessError, OSError):
-        return False
-
-
 def update_git_repository_ff_only(path, label, force_reset=False):
     before = git_head(path)
     branch = git_branch(path)
