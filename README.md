@@ -254,6 +254,19 @@ smu profile doctor
 smu adapter doctor
 ```
 
+## Convenience `dotfiles` CLI
+
+Thin [`dotfiles`](dotfiles) helper next to `smu` (`edit`, `update`,
+`preferences`, `clean`). Put `$SMU_HOME_DIR/set-me-up-installer` on `PATH`.
+
+```bash
+dotfiles help
+dotfiles edit                 # opens $SMU_HOME_DIR in $EDITOR
+dotfiles update               # smu update --all
+dotfiles preferences          # smu -p -m preferences --no-base
+dotfiles clean [--dry-run|-n] # OS + language manager caches when present
+```
+
 ## Updating an installed blueprint
 
 Use `smu update` for routine updates after the first bootstrap:
