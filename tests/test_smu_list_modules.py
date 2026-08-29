@@ -4,7 +4,7 @@ import io
 import os
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import patch
 
 import smu
@@ -75,10 +75,11 @@ class TestDiscoverModules(unittest.TestCase):
 
 class TestListModulesOutput(unittest.TestCase):
     def _run(self, **kwargs):
-        buf = io.StringIO()
-        with redirect_stdout(buf):
+        stdout_buf = io.StringIO()
+        stderr_buf = io.StringIO()
+        with redirect_stdout(stdout_buf), redirect_stderr(stderr_buf):
             smu.list_modules(**kwargs)
-        return buf.getvalue()
+        return stdout_buf.getvalue() + stderr_buf.getvalue()
 
     def test_default_filters_to_current_os_and_universal(self):
         with tempfile.TemporaryDirectory() as tempdir:

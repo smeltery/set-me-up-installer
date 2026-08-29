@@ -1,17 +1,5 @@
 from .core import *
-
-
-def git_has_worktree_changes(path):
-    try:
-        result = subprocess.run(
-            ["git", "-C", path, "status", "--porcelain"],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-        return bool(result.stdout.strip())
-    except (subprocess.CalledProcessError, OSError):
-        return False
+from .ops import output_runtime as output
 
 
 def update_git_repository_ff_only(path, label, force_reset=False):
@@ -104,8 +92,15 @@ def print_repository_update_doctor(json_output=False):
     if json_output:
         print(json.dumps(payload, indent=2, sort_keys=True))
     else:
+        output.ohai("Checking blueprint health")
         for repo in payload["repositories"]:
-            print(f"{repo['update_status']}\t{repo['name']}\tdirty={str(repo['dirty']).lower()}\tbranch={repo.get('branch') or '-'}")
+            output.print_repo_update_status(
+                repo["name"],
+                repo["update_status"],
+                dirty=repo.get("dirty", False),
+            )
+        if failed:
+            output.opoo("commit, stash, or run: smu update blueprint --force-reset")
     return 1 if failed else 0
 
 
@@ -116,7 +111,14 @@ def print_repository_update_results(results, json_output=False):
         return exit_code
     for item in results:
         detail = item.get("error") or item.get("branch") or "-"
-        print(f"{item['status']}\t{item['name']}\t{detail}")
+        name = item["name"]
+        status = item["status"]
+        if status in ("updated", "reset"):
+            output.pretty_ok(f"{name} {status} ({detail})")
+        elif status == "blocked":
+            output.pretty_warn(f"{name} {status} ({detail})")
+        else:
+            output.onoe(f"{name} {status}: {detail}")
     return exit_code
 
 
@@ -153,6 +155,80 @@ def update_modules_command(json_output=False, dry_run=False):
     payload = {"actions": ["update-modules"], "exit_code": 0}
     if json_output:
         print(json.dumps(payload, indent=2, sort_keys=True))
+    return 0
+
+
+def provisioning_sync_plan(profile=None):
+    mode = configured_provisioning_mode()
+    adapter = configured_profile_provisioning_adapter(profile)
+    steps = ["resolve-profile", "materialize-adapters"]
+    if provisioning_mode_requires_rcm_dotfiles(mode):
+        steps.append("rcm-dotfiles")
+    if provisioning_mode_requires_adapter_apply(mode):
+        steps.append("provisioning-apply")
+    return {
+        "mode": mode,
+        "adapter": adapter,
+        "profile": profile or "default",
+        "steps": steps,
+    }
+
+
+def sync_provision_command(
+    json_output=False,
+    dry_run=False,
+    profile=None,
+    quiet=False,
+    plan_only=False,
+    shared_only=False,
+    apply_only=False,
+):
+    plan = provisioning_sync_plan(profile)
+    if plan_only or dry_run:
+        if json_output or dry_run:
+            print(json.dumps(plan, indent=2, sort_keys=True))
+            return 0
+        for step_name in plan["steps"]:
+            print(f"plan\t{step_name}")
+        return 0
+
+    if apply_only:
+        if "provisioning-apply" not in plan["steps"]:
+            return 0
+        if not quiet:
+            output.ohai(f"Applying provisioning adapter ({plan['adapter']})")
+        return apply_provisioning_adapter_modules(
+            adapter_id=plan["adapter"],
+            profile=profile,
+            json_output=json_output,
+            dry_run=False,
+            action="switch",
+        )
+
+    if shared_only or not apply_only:
+        if not quiet:
+            output.ohai("Resolving profile")
+        write_resolved_profile()
+        if not quiet:
+            output.ohai("Materializing adapters")
+        materialize_adapters(current_theme(), current_prompt(), dry_run=False)
+
+    if not shared_only and not apply_only and "provisioning-apply" in plan["steps"]:
+        if not quiet:
+            output.ohai(f"Applying provisioning adapter ({plan['adapter']})")
+        exit_code = apply_provisioning_adapter_modules(
+            adapter_id=plan["adapter"],
+            profile=profile,
+            json_output=json_output,
+            dry_run=False,
+            action="switch",
+        )
+        if json_output:
+            print(json.dumps({"plan": plan, "exit_code": exit_code}, indent=2, sort_keys=True))
+        return exit_code
+
+    if json_output:
+        print(json.dumps({"plan": plan, "exit_code": 0}, indent=2, sort_keys=True))
     return 0
 
 

@@ -62,6 +62,8 @@ def main():
             raise SystemExit(module_graph_command(command_args))
         if command == "tui":
             raise SystemExit(tui_command(command_args))
+        if command == "local":
+            raise SystemExit(local_command(command_args))
         if command == "drift":
             raise SystemExit(drift_command(command_args))
         if command == "post-install":
@@ -171,6 +173,16 @@ def main():
                 raise SystemExit(locked_call("update modules", update_modules_command,
                     json_output=json_output,
                     dry_run=dry_run,
+                ))
+            if command_args and command_args[0] == "sync":
+                sync_args = [arg for arg in command_args[1:] if arg != "sync"]
+                raise SystemExit(locked_call("update sync", sync_provision_command,
+                    json_output=json_output,
+                    dry_run=dry_run,
+                    plan_only="--plan" in sync_args,
+                    quiet="--quiet" in sync_args or "-q" in sync_args,
+                    shared_only="--shared-only" in sync_args,
+                    apply_only="--apply-only" in sync_args,
                 ))
             if "--all" in command_args:
                 raise SystemExit(locked_call("update all", update_all_command,

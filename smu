@@ -13,6 +13,9 @@ readonly smu_home_dir=${smu_home_dir:-"${HOME}/set-me-up"}
 # <path-to-smu>/scripts/somedotfile vs <path-to-smu>/scripts/brew/../somedotfile
 readonly installer_scripts_path="${smu_home_dir}/set-me-up-installer/scripts"
 
+# shellcheck source=/dev/null
+source "${installer_scripts_path}/lib/output.sh"
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Dynamically build SMU_BLUEPRINT and SMU_BLUEPRINT_BRANCH
@@ -76,7 +79,7 @@ is_setup_profile_command() {
 
 is_python_smu_command() {
 	case "${1:-}" in
-		adapter|blueprint|bootstrap|conformance|contract|doctor|help|home-manager|hm|init|machine-profile|migration-pr|nix|operability|plan|preset|profile|prompt|provisioning-adapter|provisioning-adapters|release-notes|rollback|secrets|state|status|support|theme|trust|update|vps)
+		adapter|blueprint|bootstrap|conformance|contract|doctor|help|home-manager|hm|init|local|machine-profile|migration-pr|nix|operability|plan|preset|profile|prompt|provisioning-adapter|provisioning-adapters|release-notes|rollback|secrets|state|status|support|theme|trust|update|vps)
 			return 0
 			;;
 	esac
@@ -86,7 +89,7 @@ is_python_smu_command() {
 
 run_python_smu() {
 	if [ ! -f "${smu_home_dir}/set-me-up-installer/smu.py" ]; then
-		error "'smu.py' does not exist."
+		output_onoe "'smu.py' does not exist."
 		exit 1
 	fi
 
@@ -100,6 +103,15 @@ main() {
 	# It is used to check if the (minimal) required dependencies are installed.
 	# If they are not installed, then this script will attempt to install them.
 
+	if is_setup_profile_command "$@" || is_python_smu_command "$@"; then
+		if ! cmd_exists "python3"; then
+			output_onoe "'python3' is required to run this set-me-up command."
+			exit 1
+		fi
+		run_python_smu "$@"
+		return
+	fi
+
 	bash "${installer_scripts_path}"/header.sh
 
 	# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -107,28 +119,19 @@ main() {
 	# Check if detected OS is supported
 	if [[ "${SMU_OS}" != "MacOS" ]] && [[ "${SMU_OS}" != "debian" ]] && [[ "${SMU_OS}" != "arch" ]]; then
 		# shellcheck disable=SC2154
-		error "Sorry, '${bold}set-me-up${normal}' is not supported on your OS.\n"
+		output_onoe "Sorry, 'set-me-up' is not supported on your OS."
 		exit 1
 	fi
 
-	success "Detected 'set-me-up' version: ${bold}${SMU_OS}${normal}."
+	output_pretty_ok "Detected set-me-up version: ${SMU_OS}"
 
 	printf "\n"
-
-	if is_setup_profile_command "$@" || is_python_smu_command "$@"; then
-		if ! cmd_exists "python3"; then
-			error "'python3' is required to run this set-me-up command."
-			exit 1
-		fi
-		run_python_smu "$@"
-		return
-	fi
 
 	# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	# Check if ~/.bash.local exists
 	if [ ! -f "${HOME}/.bash.local" ]; then
-		warn "'~/.bash.local' does not exist."
+		output_opoo "'~/.bash.local' does not exist."
 
 		# We must first create the $HOME/.bash.local configuration file
 		# in order for the brew module to properly install Homebrew.
@@ -141,22 +144,22 @@ main() {
 	# Otherwise, if 'brew' is not installed, we will install it.
 
 	if ! is_brew_installed; then
-		warn "'brew' is not installed."
-
+		output_opoo "'brew' is not installed."
+		output_ohai "Installing Homebrew"
 		install_brew
 	else
-		success "'brew' is installed."
+		output_pretty_ok "brew is installed"
 	fi
 
 	if ! cmd_exists "python3"; then
-		warn "'python3' is not installed."
-
+		output_opoo "'python3' is not installed."
+		output_ohai "Installing python3"
 		# Install 'python3' via 'brew' and 'pyenv'
 		# 'pyenv' is a Python version management tool
 		# see: https://github.com/pyenv/pyenv
 		bash "${installer_scripts_path}"/python/pyenv.sh
 	else
-		success "'python3' is installed."
+		output_pretty_ok "python3 is installed"
 	fi
 
 	# Check if 'rcm' is installed, because it is required for this script to work.
@@ -171,22 +174,22 @@ main() {
 	)
 
 	if ! cmd_exists "${commands[@]}"; then
-		warn "'rcm' is not installed."
-
+		output_opoo "'rcm' is not installed."
+		output_ohai "Installing rcm"
 		# Install 'rcm' via 'brew' or 'aur' if on arch
 		bash "${installer_scripts_path}"/rcm/rcm.sh
 	else
-		success "'rcm' is installed."
+		output_pretty_ok "rcm is installed"
 	fi
 
 	# Determine if 'git' is installed
 	if ! cmd_exists "git"; then
-		warn "'git' is not installed."
-
+		output_opoo "'git' is not installed."
+		output_ohai "Installing git"
 		# Install 'git' via 'brew'
 		brew_install "git"
 	else
-		success "'git' is installed."
+		output_pretty_ok "git is installed"
 	fi
 
 	# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

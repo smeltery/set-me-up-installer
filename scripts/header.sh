@@ -5,6 +5,9 @@ source /dev/stdin <<<"$(curl -s "https://raw.githubusercontent.com/smeltery/util
 
 smu::import base
 
+# shellcheck source=/dev/null
+source "$(dirname "${BASH_SOURCE[0]}")/lib/output.sh"
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 header() {
@@ -20,13 +23,12 @@ header() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # shellcheck disable=SC2154
-echo -e "\n${bold}\$HOME sweet /~\n${normal}"
+output_ohai "Installing set-me-up"
 
-echo -e "Welcome to the '${bold}set-me-up${normal}' installer."
 echo -e "For more information, please see [https://github.com/smeltery/set-me-up-docs]."
 echo -e "Please follow the on-screen instructions.\n"
 
-warn "${bold}This script sets up new machines, *use with caution*${normal}."
-warn "${bold}Ensure your Mac, *Debian*, or *Arch* Linux system is fully up-to-date${normal}."
+output_opoo "This script sets up new machines, *use with caution*."
+output_opoo "Ensure your Mac, *Debian*, or *Arch* Linux system is fully up-to-date."
 
 header

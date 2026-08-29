@@ -4,7 +4,7 @@ import io
 import os
 import tempfile
 import unittest
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import patch
 
 import smu
@@ -153,17 +153,24 @@ class TestUninstallModule(unittest.TestCase):
 
 
 class TestUninstallModulesBatch(unittest.TestCase):
+    def _capture_output(self, func):
+        stdout_buf = io.StringIO()
+        stderr_buf = io.StringIO()
+        with redirect_stdout(stdout_buf), redirect_stderr(stderr_buf):
+            func()
+        return stdout_buf.getvalue() + stderr_buf.getvalue()
+
     def test_dry_run_skips_confirmation_and_executes_nothing_destructive(self):
         with patch("smu.get_module_path", return_value="/tmp/m/brewfile"), \
                 patch.object(smu, "macOS", True), \
                 patch("smu.subprocess.call", return_value=0), \
                 patch("smu.subprocess.run") as mock_run, \
                 patch("smu.os.chdir"):
-            buf = io.StringIO()
-            with redirect_stdout(buf):
-                smu.uninstall_modules_batch(["ai/chatgpt"], dry_run=True, no_confirm=False)
+            out = self._capture_output(
+                lambda: smu.uninstall_modules_batch(["ai/chatgpt"], dry_run=True, no_confirm=False)
+            )
 
-        self.assertIn("Dry run", buf.getvalue())
+        self.assertIn("Dry run", out)
         # Dry-run never invokes the destructive command.
         mock_run.assert_not_called()
 
@@ -177,9 +184,9 @@ class TestUninstallModulesBatch(unittest.TestCase):
                 patch("smu.subprocess.run") as mock_run, \
                 patch("smu.os.chdir"), \
                 patch("builtins.input") as mock_input:
-            buf = io.StringIO()
-            with redirect_stdout(buf):
-                smu.uninstall_modules_batch(["ai/chatgpt"], dry_run=False, no_confirm=True)
+            self._capture_output(
+                lambda: smu.uninstall_modules_batch(["ai/chatgpt"], dry_run=False, no_confirm=True)
+            )
 
         mock_input.assert_not_called()
         mock_run.assert_called_once()
@@ -191,12 +198,12 @@ class TestUninstallModulesBatch(unittest.TestCase):
                 patch("smu.subprocess.run") as mock_run, \
                 patch("smu.os.chdir"), \
                 patch("builtins.input", return_value="n"):
-            buf = io.StringIO()
-            with redirect_stdout(buf):
-                smu.uninstall_modules_batch(["ai/chatgpt"], dry_run=False, no_confirm=False)
+            out = self._capture_output(
+                lambda: smu.uninstall_modules_batch(["ai/chatgpt"], dry_run=False, no_confirm=False)
+            )
 
         mock_run.assert_not_called()
-        self.assertIn("Aborted", buf.getvalue())
+        self.assertIn("Aborted", out)
 
     def test_unsupported_modules_listed_and_remaining_skipped(self):
         with tempfile.TemporaryDirectory() as tempdir:
@@ -205,11 +212,10 @@ class TestUninstallModulesBatch(unittest.TestCase):
             _touch(os.path.join(module_dir, "installers.sh"))
 
             with patch("smu.get_module_path", return_value=os.path.join(module_dir, "installers.sh")):
-                buf = io.StringIO()
-                with redirect_stdout(buf):
-                    smu.uninstall_modules_batch(["installers"], dry_run=False, no_confirm=True)
+                out = self._capture_output(
+                    lambda: smu.uninstall_modules_batch(["installers"], dry_run=False, no_confirm=True)
+                )
 
-        out = buf.getvalue()
         self.assertIn("Cannot auto-uninstall", out)
         self.assertIn("installers", out)
         self.assertIn("Nothing to uninstall", out)

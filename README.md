@@ -236,26 +236,12 @@ so new terminals pick up the saved profile.
 Provisioning adapter docs live in [Provisioning Adapters](docs/provisioning-adapters.md).
 `rcm` is current; Nix-oriented adapter IDs are reserved for the Nix path.
 
-Users can keep machine-local choices outside the managed repo by creating
-override files in `~/.config/set-me-up/`:
-
-```toml
-# theme.toml
-theme = "nord"
-
-# prompt.toml
-prompt = "classic"
-
-# preset.toml
-preset = "nord-minimal"
-```
-
-Resolution order is environment variable, local override file, saved profile,
-then defaults. For example, `SMU_THEME` wins over `theme.toml`, and
-`theme.toml` wins over `profile.env`.
-
-Detailed catalog, registry, pack publishing, resolved profile, and adapter
-authoring workflows live in [Catalogs And Adapters](docs/catalogs-and-adapters.md).
+Users can keep machine-local choices in `~/.config/set-me-up/` override files
+(`theme.toml`, `prompt.toml`, `preset.toml`) or uncommitted blueprint overlays
+under `$SMU_HOME_DIR/dotfiles/local/`. See
+[Machine-Local Configuration](docs/machine-local.md) for init/doctor commands
+and [Catalogs And Adapters](docs/catalogs-and-adapters.md) for profile
+resolution order.
 
 For the common checks after changing local profile or catalog files, run:
 
@@ -264,6 +250,19 @@ smu catalog doctor
 smu profile resolve
 smu profile doctor
 smu adapter doctor
+```
+
+## Convenience `dotfiles` CLI
+
+Thin [`dotfiles`](dotfiles) helper next to `smu` (`edit`, `update`,
+`preferences`, `clean`). Put `$SMU_HOME_DIR/set-me-up-installer` on `PATH`.
+
+```bash
+dotfiles help
+dotfiles edit                 # opens $SMU_HOME_DIR in $EDITOR
+dotfiles update               # smu update --all
+dotfiles preferences          # smu -p -m preferences --no-base
+dotfiles clean [--dry-run|-n] # OS + language manager caches when present
 ```
 
 ## Updating an installed blueprint

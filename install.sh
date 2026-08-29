@@ -193,6 +193,15 @@ function is_dir_empty() {
 }
 
 function has_worktree_changes() {
+	local helper default_ignored="dotfiles/local|dotfiles/tag-local|dotfiles/tag-smu"
+	for helper in "${SMU_HOME_DIR}/set-me-up-installer/scripts/lib/worktree-ignore.sh" \
+		"$(dirname "${BASH_SOURCE[0]}")/scripts/lib/worktree-ignore.sh"; do
+		[ -f "$helper" ] || continue
+		# shellcheck source=/dev/null
+		source "$helper"
+		_smu_has_worktree_changes "$SMU_HOME_DIR" "${SMU_IGNORED_PATHS:-$default_ignored}"
+		return $?
+	done
 	[[ -n "$(git -C "${SMU_HOME_DIR}" status --porcelain 2>/dev/null)" ]]
 }
 
@@ -404,12 +413,8 @@ EOF
 }
 
 function install_rosetta_if_needed() {
-	# Installing Rosetta 2 on Apple Silicon Macs
-	# See https://derflounder.wordpress.com/2020/11/17/installing-rosetta-2-on-apple-silicon-macs/
-
 	if can_install_rosetta && ! is_rosetta_installed; then
 		install_rosetta
-
 		return 0
 	fi
 
@@ -429,26 +434,13 @@ function install_xcode_command_line_tools_if_needed() {
 }
 
 function invoked_via_smu_blueprint() {
-	# Check if both SMU_BLUEPRINT and SMU_BLUEPRINT_BRANCH are set
-	if [[ -n "$SMU_BLUEPRINT" ]] && [[ -n "$SMU_BLUEPRINT_BRANCH" ]]; then
-		# Both variables are set, so we can assume that the installer was invoked via SMU Blueprint.
-		return 0
-	fi
-
-	return 1
+	[[ -n "$SMU_BLUEPRINT" && -n "$SMU_BLUEPRINT_BRANCH" ]]
 }
 
 function check_os_support() {
-	# Check if both SMU_BLUEPRINT and SMU_BLUEPRINT_BRANCH are set
-	if invoked_via_smu_blueprint; then
-		# If invoked via SMU Blueprint, then we can assume that the OS is supported.
-		# This is because the SMU Blueprint is responsible for determining if the OS is supported.
-		# By default, 'smeltery/set-me-up' (non-blueprint) supports MacOS, Debian, and Arch Linux.
-		return 0
-	fi
+	invoked_via_smu_blueprint && return 0
 
-	# Check if OS is supported (MacOS, Debian, or Arch Linux)
-	if [[ "$SMU_OS" != "MacOS" ]] && [[ "$SMU_OS" != "debian" ]] && [[ "$SMU_OS" != "arch" ]]; then
+	if [[ "$SMU_OS" != "MacOS" && "$SMU_OS" != "debian" && "$SMU_OS" != "arch" ]]; then
 		error -e "Sorry, '${bold}set-me-up${normal}' is not supported on your OS.\n"
 		exit 1
 	fi
