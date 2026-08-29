@@ -33,10 +33,9 @@ help() {
   echo "Usage: $BIN_NAME <command> [args]"
   echo
   echo "Commands:"
-  echo "   clean            Clean package caches (brew, nvm) when present"
+  echo "   clean            Clean package/tool caches when present (OS + language managers)"
   echo "   edit             Open set-me-up in \$EDITOR (falls back to \$VISUAL, then vi)"
   echo "   preferences      Apply the preferences module via smu"
-  echo "   macos            Alias for preferences"
   echo "   update [args]    Update via smu update (default: --all)"
   echo "   help             This help message"
 }
@@ -59,23 +58,51 @@ update() {
   fi
 }
 
-clean() {
-  command -v brew >/dev/null 2>&1 &&
-    brew cleanup
+# Run "$@" when $1 is on PATH. Prints a short label and continues on failure.
+_clean_run() {
+  local label=$1
+  shift
+  command -v "$1" >/dev/null 2>&1 || return 0
+  echo "→ $label"
+  "$@" || echo "warning: $label cleanup failed" >&2
+}
 
-  [ -n "${NVM_DIR:-}" ] && [ -s "$NVM_DIR/nvm.sh" ] && {
-    . "$NVM_DIR/nvm.sh" &&
-      nvm cache clear
-  }
+clean() {
+  _clean_run "Homebrew" brew cleanup
+
+  if [ -n "${NVM_DIR:-}" ] && [ -s "$NVM_DIR/nvm.sh" ]; then
+    echo "→ nvm"
+    # shellcheck disable=SC1091
+    . "$NVM_DIR/nvm.sh" && nvm cache clear ||
+      echo "warning: nvm cleanup failed" >&2
+  fi
+
+  _clean_run "npm" npm cache clean --force
+  _clean_run "yarn" yarn cache clean
+  _clean_run "pnpm" pnpm store prune
+
+  if command -v pip3 >/dev/null 2>&1; then
+    _clean_run "pip3" pip3 cache purge
+  else
+    _clean_run "pip" pip cache purge
+  fi
+
+  _clean_run "Go" go clean -cache
+  _clean_run "mise" mise cache clear
+  _clean_run "RubyGems" gem cleanup
+  _clean_run "Composer" composer clear-cache
+
+  # System package caches need root; skip quietly for normal users.
+  if [ "$(id -u)" -eq 0 ]; then
+    _clean_run "apt" apt-get clean
+    _clean_run "apt autoclean" apt-get autoclean
+    _clean_run "pacman" pacman -Sc --noconfirm
+  fi
 }
 
 preferences() {
   require_smu_home || return 1
   smu_cmd -p -m preferences --no-base
-}
-
-macos() {
-  preferences "$@"
 }
 
 case "$COMMAND_NAME" in

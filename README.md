@@ -266,7 +266,7 @@ dotfiles help
 dotfiles edit          # opens $SMU_HOME_DIR in $EDITOR
 dotfiles update        # smu update --all
 dotfiles preferences   # smu -p -m preferences --no-base
-dotfiles clean         # brew / nvm cache cleanup when present
+dotfiles clean         # OS + language manager caches when present
 ```
 
 ## Updating an installed blueprint
