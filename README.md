@@ -263,10 +263,11 @@ into a personal `rcm` tag.
 
 ```bash
 dotfiles help
-dotfiles edit          # opens $SMU_HOME_DIR in $EDITOR
-dotfiles update        # smu update --all
-dotfiles preferences   # smu -p -m preferences --no-base
-dotfiles clean         # OS + language manager caches when present
+dotfiles edit              # opens $SMU_HOME_DIR in $EDITOR
+dotfiles update            # smu update --all
+dotfiles preferences       # smu -p -m preferences --no-base
+dotfiles clean             # OS + language manager caches when present
+dotfiles clean --dry-run   # preview clean targets without running them
 ```
 
 ## Updating an installed blueprint

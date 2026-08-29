@@ -164,6 +164,15 @@ cli_smoke() {
 shell_checks() {
     find scripts -type f -name "*.sh" -print0 | xargs -0 shellcheck
     shellcheck install.sh smu dotfiles
+
+    ./dotfiles help >/dev/null
+    ./dotfiles clean --dry-run >/dev/null
+
+    # Symlink resolution must still find the sibling smu binary.
+    symlink_dir="$(mktemp -d)"
+    ln -s "$repo_root/dotfiles" "$symlink_dir/dotfiles"
+    "$symlink_dir/dotfiles" help >/dev/null
+    rm -rf "$symlink_dir"
 }
 
 markdown_checks() {

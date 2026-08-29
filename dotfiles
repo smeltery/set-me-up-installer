@@ -4,8 +4,24 @@
 
 BIN_NAME=$(basename "$0")
 COMMAND_NAME=$1
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
+_resolve_script_dir() {
+  local source="${BASH_SOURCE[0]}"
+  local dir
+
+  while [ -L "$source" ]; do
+    dir="$(cd "$(dirname "$source")" && pwd)"
+    source="$(readlink "$source")"
+    case "$source" in
+    /*) ;;
+    *) source="$dir/$source" ;;
+    esac
+  done
+
+  cd "$(dirname "$source")" && pwd
+}
+
+SCRIPT_DIR="$(_resolve_script_dir)"
 SMU_HOME_DIR="${SMU_HOME_DIR:-$HOME/set-me-up}"
 
 smu_cmd() {
@@ -33,11 +49,11 @@ help() {
   echo "Usage: $BIN_NAME <command> [args]"
   echo
   echo "Commands:"
-  echo "   clean            Clean package/tool caches when present (OS + language managers)"
-  echo "   edit             Open set-me-up in \$EDITOR (falls back to \$VISUAL, then vi)"
-  echo "   preferences      Apply the preferences module via smu"
-  echo "   update [args]    Update via smu update (default: --all)"
-  echo "   help             This help message"
+  echo "   clean [--dry-run|-n]  Clean package/tool caches when present"
+  echo "   edit                  Open set-me-up in \$EDITOR (falls back to \$VISUAL, then vi)"
+  echo "   preferences           Apply the preferences module via smu"
+  echo "   update [args]         Update via smu update (default: --all)"
+  echo "   help                  This help message"
 }
 
 edit() {
@@ -58,23 +74,103 @@ update() {
   fi
 }
 
-# Run "$@" when $1 is on PATH. Prints a short label and continues on failure.
+CLEAN_DRY_RUN=0
+CLEANED=()
+SKIPPED=()
+FAILED=()
+
+_clean_join() {
+  if [ "$#" -eq 0 ]; then
+    echo "none"
+    return
+  fi
+  printf '%s' "$1"
+  shift
+  for item; do
+    printf ', %s' "$item"
+  done
+  printf '\n'
+}
+
+_clean_summary() {
+  echo
+  if [ "$CLEAN_DRY_RUN" -eq 1 ]; then
+    echo "would clean: $(_clean_join "${CLEANED[@]}")"
+  else
+    echo "cleaned: $(_clean_join "${CLEANED[@]}")"
+  fi
+  echo "skipped: $(_clean_join "${SKIPPED[@]}")"
+  echo "failed: $(_clean_join "${FAILED[@]}")"
+}
+
+# Run "$@" when $1 is on PATH. Records cleaned / failed for the summary.
 _clean_run() {
   local label=$1
   shift
-  command -v "$1" >/dev/null 2>&1 || return 0
+
+  if ! command -v "$1" >/dev/null 2>&1; then
+    return 0
+  fi
+
+  if [ "$CLEAN_DRY_RUN" -eq 1 ]; then
+    echo "→ $label (dry-run)"
+    CLEANED+=("$label")
+    return 0
+  fi
+
   echo "→ $label"
-  "$@" || echo "warning: $label cleanup failed" >&2
+  if "$@"; then
+    CLEANED+=("$label")
+  else
+    FAILED+=("$label")
+    echo "warning: $label cleanup failed" >&2
+  fi
+}
+
+_clean_skip() {
+  SKIPPED+=("$1")
 }
 
 clean() {
+  CLEAN_DRY_RUN=0
+  CLEANED=()
+  SKIPPED=()
+  FAILED=()
+
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+    --dry-run | -n)
+      CLEAN_DRY_RUN=1
+      shift
+      ;;
+    -h | --help)
+      echo "Usage: $BIN_NAME clean [--dry-run|-n]"
+      return 0
+      ;;
+    *)
+      echo "error: unknown option '$1'" >&2
+      echo "Usage: $BIN_NAME clean [--dry-run|-n]" >&2
+      return 1
+      ;;
+    esac
+  done
+
   _clean_run "Homebrew" brew cleanup
 
   if [ -n "${NVM_DIR:-}" ] && [ -s "$NVM_DIR/nvm.sh" ]; then
-    echo "→ nvm"
-    # shellcheck disable=SC1091
-    . "$NVM_DIR/nvm.sh" && nvm cache clear ||
-      echo "warning: nvm cleanup failed" >&2
+    if [ "$CLEAN_DRY_RUN" -eq 1 ]; then
+      echo "→ nvm (dry-run)"
+      CLEANED+=("nvm")
+    else
+      echo "→ nvm"
+      # shellcheck disable=SC1091
+      if . "$NVM_DIR/nvm.sh" && nvm cache clear; then
+        CLEANED+=("nvm")
+      else
+        FAILED+=("nvm")
+        echo "warning: nvm cleanup failed" >&2
+      fi
+    fi
   fi
 
   _clean_run "npm" npm cache clean --force
@@ -92,16 +188,28 @@ clean() {
   _clean_run "RubyGems" gem cleanup
   _clean_run "Composer" composer clear-cache
 
-  # System package caches need root; skip quietly for normal users.
+  # System package caches need root; skip with an explicit reason otherwise.
   if [ "$(id -u)" -eq 0 ]; then
     _clean_run "apt" apt-get clean
     _clean_run "apt autoclean" apt-get autoclean
     _clean_run "pacman" pacman -Sc --noconfirm
+  else
+    command -v apt-get >/dev/null 2>&1 && _clean_skip "apt (needs root)"
+    command -v pacman >/dev/null 2>&1 && _clean_skip "pacman (needs root)"
   fi
+
+  _clean_summary
 }
 
 preferences() {
   require_smu_home || return 1
+
+  if ! find "$SMU_HOME_DIR/dotfiles/modules" -type d -name preferences 2>/dev/null | grep -q .; then
+    echo "error: preferences module not found under $SMU_HOME_DIR/dotfiles/modules" >&2
+    echo "hint: add a preferences module to your blueprint, or run: smu -l --search preferences --all" >&2
+    return 1
+  fi
+
   smu_cmd -p -m preferences --no-base
 }
 
