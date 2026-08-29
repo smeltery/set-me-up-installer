@@ -3,8 +3,6 @@
 [![Tests](https://github.com/smeltery/set-me-up-installer/actions/workflows/tests.yml/badge.svg)](https://github.com/smeltery/set-me-up-installer/actions/workflows/tests.yml)
 [![License: PolyForm Shield 1.0.0](https://img.shields.io/badge/License-PolyForm%20Shield%201.0.0-blue.svg)](https://polyformproject.org/licenses/shield/1.0.0)
 
-![preview](.github/preview.png)
-
 This is the universal installer script used to install `set-me-up` (`smu`) on a
 Mac, *debian*, or *arch* based machine. Users normally install a blueprint
 repository, and the blueprint bootstrap delegates here.
