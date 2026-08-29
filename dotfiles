@@ -59,9 +59,15 @@ help() {
 edit() {
   require_smu_home || return 1
 
-  # Unquoted so values like `code --wait` work.
-  # shellcheck disable=SC2086
-  ${EDITOR:-${VISUAL:-vi}} "$SMU_HOME_DIR"
+  # Split EDITOR/VISUAL into a command + args vector (e.g. `code --wait`).
+  # Disable globbing so accidental metacharacters in the value are not expanded.
+  local editor="${EDITOR:-${VISUAL:-vi}}"
+  local -a editor_cmd
+  set -f
+  # shellcheck disable=SC2206
+  editor_cmd=($editor)
+  set +f
+  "${editor_cmd[@]}" "$SMU_HOME_DIR"
 }
 
 update() {
