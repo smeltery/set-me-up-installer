@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# shellcheck source=/dev/null
+
+BIN_NAME=$(basename "$0")
+COMMAND_NAME=$1
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+SMU_HOME_DIR="${SMU_HOME_DIR:-$HOME/set-me-up}"
+
+smu_cmd() {
+  if [ -x "$SCRIPT_DIR/smu" ]; then
+    "$SCRIPT_DIR/smu" "$@"
+  elif command -v smu >/dev/null 2>&1; then
+    command smu "$@"
+  elif [ -x "$SMU_HOME_DIR/set-me-up-installer/smu" ]; then
+    "$SMU_HOME_DIR/set-me-up-installer/smu" "$@"
+  else
+    echo "error: smu not found (install set-me-up or set SMU_HOME_DIR)" >&2
+    return 127
+  fi
+}
+
+require_smu_home() {
+  if [ ! -d "$SMU_HOME_DIR" ]; then
+    echo "error: set-me-up not found at $SMU_HOME_DIR" >&2
+    echo "hint: install set-me-up or set SMU_HOME_DIR" >&2
+    return 1
+  fi
+}
+
+help() {
+  echo "Usage: $BIN_NAME <command> [args]"
+  echo
+  echo "Commands:"
+  echo "   clean            Clean package caches (brew, nvm) when present"
+  echo "   edit             Open set-me-up in \$EDITOR (falls back to \$VISUAL, then vi)"
+  echo "   preferences      Apply the preferences module via smu"
+  echo "   macos            Alias for preferences"
+  echo "   update [args]    Update via smu update (default: --all)"
+  echo "   help             This help message"
+}
+
+edit() {
+  require_smu_home || return 1
+
+  # Unquoted so values like `code --wait` work.
+  # shellcheck disable=SC2086
+  ${EDITOR:-${VISUAL:-vi}} "$SMU_HOME_DIR"
+}
+
+update() {
+  require_smu_home || return 1
+
+  if [ "$#" -eq 0 ]; then
+    smu_cmd update --all
+  else
+    smu_cmd update "$@"
+  fi
+}
+
+clean() {
+  command -v brew >/dev/null 2>&1 &&
+    brew cleanup
+
+  [ -n "${NVM_DIR:-}" ] && [ -s "$NVM_DIR/nvm.sh" ] && {
+    . "$NVM_DIR/nvm.sh" &&
+      nvm cache clear
+  }
+}
+
+preferences() {
+  require_smu_home || return 1
+  smu_cmd -p -m preferences --no-base
+}
+
+macos() {
+  preferences "$@"
+}
+
+case "$COMMAND_NAME" in
+"" | "-h" | "--help" | help)
+  help
+  ;;
+*)
+  shift
+  if ! declare -f "$COMMAND_NAME" >/dev/null; then
+    echo "'$COMMAND_NAME' is not a known command." >&2
+    help
+    exit 1
+  fi
+  "${COMMAND_NAME}" "$@"
+  exit $?
+  ;;
+esac

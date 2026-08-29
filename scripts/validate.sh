@@ -163,7 +163,7 @@ cli_smoke() {
 
 shell_checks() {
     find scripts -type f -name "*.sh" -print0 | xargs -0 shellcheck
-    shellcheck install.sh smu
+    shellcheck install.sh smu dotfiles
 }
 
 markdown_checks() {

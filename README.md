@@ -254,6 +254,21 @@ smu profile doctor
 smu adapter doctor
 ```
 
+## Convenience `dotfiles` CLI
+
+The installer ships a thin [`dotfiles`](dotfiles) helper next to `smu`. Put
+`$SMU_HOME_DIR/set-me-up-installer` on your `PATH` (many blueprints already do)
+to get `edit`, `update`, `preferences`, and `clean` without copying the script
+into a personal `rcm` tag.
+
+```bash
+dotfiles help
+dotfiles edit          # opens $SMU_HOME_DIR in $EDITOR
+dotfiles update        # smu update --all
+dotfiles preferences   # smu -p -m preferences --no-base
+dotfiles clean         # brew / nvm cache cleanup when present
+```
+
 ## Updating an installed blueprint
 
 Use `smu update` for routine updates after the first bootstrap:
